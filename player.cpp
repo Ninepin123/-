@@ -3,7 +3,7 @@
 Player::Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c)
     : x(startX), y(startY), width(w), height(h), speed(moveSpeed), color(c) {}
 
-
+//test
 void Player::move(const Uint8* keyState, int screenWidth, int screenHeight) {
     if (keyState[SDL_SCANCODE_UP]) y -= speed;
     if (keyState[SDL_SCANCODE_DOWN]) y += speed;
