@@ -1,5 +1,5 @@
-#include "Player.h"
-#include <SDL2/SDL.h>
+#include "Player.h"//test
+#include <SDL2/SDL.h>//123123123213
 Player::Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c)
     : x(startX), y(startY), width(w), height(h), speed(moveSpeed), color(c) {}
 
