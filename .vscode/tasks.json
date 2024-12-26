@@ -5,7 +5,7 @@
             "type": "shell",
             "label": "g++.exe build active file",
             //注意改成自己的MinGW目录
-            "command": "C:\\mingw\\bin\\g++.exe",
+            "command": "C:\\mingw64\\bin\\g++.exe",
             "args": [
                 "-g",
                 "${file}",
@@ -18,7 +18,7 @@
             ],
             "options": {
                 //注意改成自己的MinGW目录
-                "cwd": "C:\\mingw\\bin"
+                "cwd": "C:\\mingw64\\\\bin"
             },
             "problemMatcher": [
                 "$gcc"
