@@ -12,7 +12,7 @@ SDL_Texture* loadBackground(SDL_Renderer* renderer, const char* filePath) {
         return nullptr;
     }
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface); // 釋放臨時的 Surface
+    SDL_FreeSurface(surface); 
     if (!texture) {
         std::cout << "Failed to create texture: " << SDL_GetError() << std::endl;
     }
@@ -24,7 +24,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
         std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
     }
-    window = SDL_CreateWindow("跑跑馬力歐", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("mario run", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
@@ -70,15 +70,15 @@ int main(int argc, char* argv[]) {
         const Uint8* keyState = SDL_GetKeyboardState(nullptr);
         player.move(keyState, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        // 清空畫面
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // 背景黑色
+        
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
         SDL_RenderClear(renderer);
-        // 渲染背景
+        
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
-        // 渲染主角
+        
         player.render(renderer);
 
-        // 更新畫面
+        
         SDL_RenderPresent(renderer);
     }
 
