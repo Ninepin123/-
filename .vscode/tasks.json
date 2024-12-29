@@ -4,7 +4,6 @@
         {
             "type": "shell",
             "label": "g++.exe build active file",
-            //注意改成自己的MinGW目录
             "command": "C:\\mingw64\\bin\\g++.exe",
             "args": [
                 "-g",
@@ -17,8 +16,26 @@
                 "-mwindows"
             ],
             "options": {
-                //注意改成自己的MinGW目录
                 "cwd": "C:\\mingw64\\\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 建置使用中檔案",
+            "command": "C:\\mingw64\\bin\\gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
             },
             "problemMatcher": [
                 "$gcc"
@@ -26,7 +43,8 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "detail": "偵錯工具產生的工作。"
         }
     ]
 }
