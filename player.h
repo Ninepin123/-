@@ -1,24 +1,28 @@
+ï»¿#include <SDL2/SDL.h>
+#include<string.h>
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
+// Player ï¿½ï¿½ï¿½Oï¿½wï¿½q
 class Player {
 private:
-    int x, y;           
-    int width, height;  
-    int speed;          
-    SDL_Color color;    
-    SDL_Texture* texture; // ¤p®£Às¹Ï¤ù
+    int x, y;           // ï¿½Dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½m
+    int width, height;  // ï¿½Dï¿½ï¿½ï¿½ï¿½ï¿½Ø¤o
+    int speed;          // ï¿½Dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê³tï¿½ï¿½
+    SDL_Texture* texture;
+    SDL_Color color; 
 
 public:
+    // ï¿½Øºcï¿½ç¦¡
     Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c);
-    ~Player();
-
-    bool loadTexture(SDL_Renderer* renderer, const char* filePath); // ¥[¸ü¹Ï¤ù
+    // ï¿½Bï¿½zï¿½ï¿½ï¿½ï¿½ï¿½Þ¿ï¿½
     void move(const Uint8* keyState, int screenWidth, int screenHeight);
+
     void render(SDL_Renderer* renderer) const;
+
+    bool checkCollision(const SDL_Rect& other) const;
+
+    bool loadTexture(SDL_Renderer* renderer, const char* filePath);
 };
 
-#endif // PLAYER_H
+#endif 
