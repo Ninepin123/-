@@ -1,28 +1,26 @@
-﻿#include <SDL2/SDL.h>
-#include<string.h>
-#ifndef PLAYER_H
+﻿#ifndef PLAYER_H
 #define PLAYER_H
 
-// Player ���O�w�q
-class Player {
+#include "GameObject.h"
+#include <SDL2/SDL.h>
+#include <string>
+
+class Player : public GameObject {
 private:
-    int x, y;           // �D������m
-    int width, height;  // �D�����ؤo
-    int speed;          // �D�������ʳt��
-    SDL_Texture* texture;
-    SDL_Color color; 
+    int speed;          // Player's movement speed
+    SDL_Color color;    // Player's color (used for non-textured rendering)
 
 public:
-    // �غc�禡
     Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c);
-    // �B�z�����޿�
     void move(const Uint8* keyState, int screenWidth, int screenHeight);
-
-    void render(SDL_Renderer* renderer) const;
-
-    bool checkCollision(const SDL_Rect& other) const;
+    void render(SDL_Renderer* renderer) override;
 
     bool loadTexture(SDL_Renderer* renderer, const char* filePath);
+    bool checkCollision(const SDL_Rect& other) const;
+
+    void reset(int screenWidth, int screenHeight) override {
+        // For simplicity, Player does not need reset functionality (or it could be extended as needed)
+    }
 };
 
-#endif 
+#endif

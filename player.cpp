@@ -1,35 +1,32 @@
 ﻿#include "Player.h"
 #include <iostream>
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-// �غc�禡
+
 Player::Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c)
-    : x(startX), y(startY), width(w), height(h), speed(moveSpeed), color(c), texture(nullptr) {
+    : GameObject(startX, startY, w, h, "", nullptr), speed(moveSpeed), color(c) {
+    texture = nullptr;
 }
 
-// ���ʥD��
 void Player::move(const Uint8* keyState, int screenWidth, int screenHeight) {
-    if (keyState[SDL_SCANCODE_UP]) y -= speed;
-    if (keyState[SDL_SCANCODE_DOWN]) y += speed;
-    if (keyState[SDL_SCANCODE_LEFT]) x -= speed;
-    if (keyState[SDL_SCANCODE_RIGHT]) x += speed;
+    if (keyState[SDL_SCANCODE_UP]) rect.y -= speed;
+    if (keyState[SDL_SCANCODE_DOWN]) rect.y += speed;
+    if (keyState[SDL_SCANCODE_LEFT]) rect.x -= speed;
+    if (keyState[SDL_SCANCODE_RIGHT]) rect.x += speed;
 
-    // ����ˬd
-    if (x < 0) x = 0;
-    if (x + width > screenWidth) x = screenWidth - width;
-    if (y < 0) y = 0;
-    if (y + height > screenHeight) y = screenHeight - height;
+    if (rect.x < 0) rect.x = 0;
+    if (rect.x + rect.w > screenWidth) rect.x = screenWidth - rect.w;
+    if (rect.y < 0) rect.y = 0;
+    if (rect.y + rect.h > screenHeight) rect.y = screenHeight - rect.h;
 }
 
-// ��V�D��
-void Player::render(SDL_Renderer* renderer) const {
+// Ensure this matches the pure virtual function in GameObject exactly
+void Player::render(SDL_Renderer* renderer) {
     if (texture) {
-        SDL_Rect destRect = { x, y, width, height };
-        SDL_RenderCopy(renderer, texture, nullptr, &destRect);
-    }
-    else {
+        // If texture is available, render it
+        SDL_RenderCopy(renderer, texture, nullptr, &rect);
+    } else {
+        // If no texture is available, use the color for rendering a filled rectangle
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
-        SDL_Rect rect = { x, y, width, height };
         SDL_RenderFillRect(renderer, &rect);
     }
 }
@@ -50,6 +47,5 @@ bool Player::loadTexture(SDL_Renderer* renderer, const char* filePath) {
 }
 
 bool Player::checkCollision(const SDL_Rect& other) const {
-    SDL_Rect playerRect = { x, y, width, height };
-    return SDL_HasIntersection(&playerRect, &other);
+    return SDL_HasIntersection(&rect, &other);
 }

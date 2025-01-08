@@ -1,136 +1,74 @@
+#include "Player.h"
+#include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <iostream>
-#include "player.h"
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+// Constructor
+Player::Player(int startX, int startY, int w, int h, int moveSpeed, SDL_Color c)
+    : x(startX), y(startY), width(w), height(h), speed(moveSpeed), color(c), texture(nullptr) {
+}
 
-SDL_Texture* loadBackground(SDL_Renderer* renderer, const char* filePath) {
+// Move the player
+void Player::move(const Uint8* keyState, int screenWidth, int screenHeight) {
+    if (keyState[SDL_SCANCODE_UP]) {
+        y -= speed;  // Move up by one step
+        if (y < 0) {
+            y = 0;  // Prevent going above the screen
+        }
+        // After moving, reset to the starting position
+        x = 100;  // Reset to initial x position
+        y = 250;  // Reset to initial y position
+    }
+    if (keyState[SDL_SCANCODE_DOWN]) {
+        y += speed;  // Move down by one step
+        if (y + height > screenHeight) {
+            y = screenHeight - height;  // Prevent going below the screen
+        }
+        // After moving, reset to the starting position
+        x = 100;  // Reset to initial x position
+        y = 250;  // Reset to initial y position
+    }
+    if (keyState[SDL_SCANCODE_LEFT]) x -= speed;
+    if (keyState[SDL_SCANCODE_RIGHT]) x += speed;
+
+    // Prevent going outside the screen bounds
+    if (x < 0) x = 0;
+    if (x + width > screenWidth) x = screenWidth - width;
+    if (y < 0) y = 0;
+    if (y + height > screenHeight) y = screenHeight - height;
+}
+
+// Render the player
+void Player::render(SDL_Renderer* renderer) const {
+    if (texture) {
+        SDL_Rect destRect = { x, y, width, height };
+        SDL_RenderCopy(renderer, texture, nullptr, &destRect);
+    }
+    else {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+        SDL_Rect rect = { x, y, width, height };
+        SDL_RenderFillRect(renderer, &rect);
+    }
+}
+
+// Load texture for the player
+bool Player::loadTexture(SDL_Renderer* renderer, const char* filePath) {
     SDL_Surface* surface = IMG_Load(filePath);
     if (!surface) {
-        std::cout << "Failed to load image: " << IMG_GetError() << std::endl;
-        return nullptr;
+        std::cout << "Failed to load texture: " << IMG_GetError() << std::endl;
+        return false;
     }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     if (!texture) {
         std::cout << "Failed to create texture: " << SDL_GetError() << std::endl;
-    }
-    return texture;
-}
-
-bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    if (TTF_Init() == -1) {
-        std::cout << "SDL_ttf could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
-        return false;
-    }
-    window = SDL_CreateWindow("dinosour", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window) {
-        std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
     }
     return true;
 }
 
-void close(SDL_Window*& window, SDL_Renderer*& renderer, TTF_Font*& font) {
-    if (font) TTF_CloseFont(font);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
-}
-
-void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color, int x, int y) {
-    SDL_Surface* surface = TTF_RenderUTF8_Solid(font, text, color);
-    if (!surface) {
-        std::cout << "Failed to render text surface! TTF_Error: " << TTF_GetError() << std::endl;
-        return;
-    }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (!texture) {
-        std::cout << "Failed to create text texture! SDL_Error: " << SDL_GetError() << std::endl;
-        return;
-    }
-
-    SDL_Rect destRect = {x, y, surface->w, surface->h};
-    SDL_RenderCopy(renderer, texture, nullptr, &destRect);
-    SDL_DestroyTexture(texture);
-}
-
-int main(int argc, char* argv[]) {
-    SDL_Window* window = nullptr;
-    SDL_Renderer* renderer = nullptr;
-
-    if (!init(window, renderer)) {
-        return -1;
-    }
-
-    // 加載字體
-    TTF_Font* font = TTF_OpenFont("asset/msjh.ttc", 24);
-    if (!font) {
-        std::cout << "Failed to load font! TTF_Error: " << TTF_GetError() << std::endl;
-        close(window, renderer, font);
-        return -1;
-    }
-
-    SDL_Texture* backgroundTexture = loadBackground(renderer, "asset/background.png");
-    if (!backgroundTexture) {
-        close(window, renderer, font);
-        return -1;
-    }
-
-    SDL_Color white = {255, 255, 255};
-    Player player(100, 500, 50, 50, 1, white);
-
-    if (!player.loadTexture(renderer, "asset/dino.png")) {
-        std::cout << "Failed to load player texture!" << std::endl;
-        close(window, renderer, font);
-        return -1;
-    }
-    bool running = true;
-    SDL_Event e;
-
-    while (running) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                running = false;
-            }
-        }
-
-        const Uint8* keyState = SDL_GetKeyboardState(nullptr);
-        player.move(keyState, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        // 清空畫面
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // 背景黑色
-        SDL_RenderClear(renderer);
-
-        // 渲染背景
-        SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
-
-        // 渲染 "分數" 文字
-        renderText(renderer, font, "分數", white, 10, 10);
-
-        // 渲染主角
-        player.render(renderer);
-
-        // 更新畫面
-        SDL_RenderPresent(renderer);
-    }
-
-    SDL_DestroyTexture(backgroundTexture);
-    close(window, renderer, font);
-    return 0;
+// Check for collision with another rectangle
+bool Player::checkCollision(const SDL_Rect& other) const {
+    SDL_Rect playerRect = { x, y, width, height };
+    return SDL_HasIntersection(&playerRect, &other);
 }

@@ -30,3 +30,21 @@ void Scoreboard::render(SDL_Renderer* renderer) const {
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(texture);
 }
+
+void Scoreboard::renderGameOver(SDL_Renderer* renderer, TTF_Font* font) const {
+    // Render the Game Over text
+    SDL_Color red = { 255, 0, 0 };
+    std::string gameOverText = "Game Over! Final Score: " + std::to_string(score);
+    SDL_Surface* gameOverSurface = TTF_RenderText_Solid(font, gameOverText.c_str(), red);
+    if (gameOverSurface == nullptr) {
+        std::cout << "Unable to render 'Game Over' text surface: " << TTF_GetError() << std::endl;
+        return;
+    }
+
+    SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
+    SDL_Rect gameOverRect = { 400 - gameOverSurface->w / 2, 300 - gameOverSurface->h / 2, gameOverSurface->w, gameOverSurface->h };
+    SDL_RenderCopy(renderer, gameOverTexture, nullptr, &gameOverRect);
+
+    SDL_FreeSurface(gameOverSurface);
+    SDL_DestroyTexture(gameOverTexture);
+}

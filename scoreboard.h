@@ -11,6 +11,8 @@ public:
     void addScore(int points);
     void resetScore();
     void render(SDL_Renderer* renderer) const;
+    void renderGameOver(SDL_Renderer* renderer, TTF_Font* font) const;
+    int getScore() const { return score; }
 
 private:
     int score;
